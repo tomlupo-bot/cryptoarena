@@ -1,0 +1,66 @@
+{
+  "agent_type": "ArenaAgentCrypto",
+  "market": "crypto",
+  "date_range": {
+    "init_date": "2025-10-01",
+    "end_date": "2025-10-31"
+  },
+  "arena": {
+    "name": "Q4 Crypto Showdown",
+    "trading_interval_minutes": 60,
+    "token_budget_mode": "deduct_from_capital",
+    "max_drawdown_pct": 50.0,
+    "kill_on_bankruptcy": true
+  },
+  "models": [
+    {
+      "name": "claude-sonnet-4-5",
+      "basemodel": "anthropic/claude-sonnet-4-5-20250929",
+      "signature": "team-claude",
+      "enabled": true,
+      "token_pricing": {
+        "input_per_1m": 3.0,
+        "output_per_1m": 15.0,
+        "source": "manual"
+      }
+    },
+    {
+      "name": "gpt-5",
+      "basemodel": "openai/gpt-5",
+      "signature": "team-gpt5",
+      "enabled": true,
+      "token_pricing": {
+        "input_per_1m": 2.5,
+        "output_per_1m": 10.0,
+        "source": "manual"
+      }
+    },
+    {
+      "name": "qwen-3.5-plus",
+      "basemodel": "qwen/qwen-3.5-plus",
+      "signature": "team-qwen",
+      "enabled": true,
+      "token_pricing": {
+        "input_per_1m": 1.5,
+        "output_per_1m": 6.0,
+        "source": "manual"
+      }
+    }
+  ],
+  "agent_config": {
+    "max_steps": 30,
+    "max_retries": 3,
+    "base_delay": 0.5,
+    "initial_cash": 10000.0,
+    "verbose": true
+  },
+  "risk_limits": {
+    "max_position_pct": 30.0,
+    "max_leverage": 1.0,
+    "max_open_positions": 5,
+    "stop_loss_pct": 10.0
+  },
+  "log_config": {
+    "log_path": "./data/arena_data"
+  }
+}

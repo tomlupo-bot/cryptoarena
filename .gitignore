@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+dist/
+build/
+node_modules/
+dashboard/frontend/dist/
+data/arena_data/
+data/crypto/*.jsonl
+.venv/

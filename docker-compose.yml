@@ -1,0 +1,87 @@
+version: "3.8"
+
+services:
+  # MCP tool servers
+  mcp-math:
+    build: { context: ., dockerfile: docker/Dockerfile }
+    command: python agent_tools/tool_math.py
+    environment:
+      - MATH_HTTP_PORT=8000
+    ports: ["8000:8000"]
+
+  mcp-search:
+    build: { context: ., dockerfile: docker/Dockerfile }
+    command: python agent_tools/tool_jina_search.py
+    environment:
+      - SEARCH_HTTP_PORT=8001
+      - JINA_API_KEY=${JINA_API_KEY}
+    ports: ["8001:8001"]
+
+  mcp-price:
+    build: { context: ., dockerfile: docker/Dockerfile }
+    command: python agent_tools/tool_get_price_local.py
+    environment:
+      - GETPRICE_HTTP_PORT=8003
+    volumes:
+      - ./data:/app/data
+    ports: ["8003:8003"]
+
+  mcp-trade:
+    build: { context: ., dockerfile: docker/Dockerfile }
+    command: python agent_tools/tool_crypto_trade.py
+    environment:
+      - CRYPTO_HTTP_PORT=8005
+    volumes:
+      - ./data:/app/data
+    ports: ["8005:8005"]
+
+  mcp-indicators:
+    build: { context: ., dockerfile: docker/Dockerfile }
+    command: python agent_tools/tool_indicators.py
+    environment:
+      - INDICATORS_HTTP_PORT=8006
+    volumes:
+      - ./data:/app/data
+    ports: ["8006:8006"]
+
+  mcp-portfolio:
+    build: { context: ., dockerfile: docker/Dockerfile }
+    command: python agent_tools/tool_portfolio.py
+    environment:
+      - PORTFOLIO_HTTP_PORT=8007
+    volumes:
+      - ./data:/app/data
+    ports: ["8007:8007"]
+
+  # Arena runner
+  arena:
+    build: { context: ., dockerfile: docker/Dockerfile }
+    command: python main.py configs/arena_crypto_config.json
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_API_BASE=${OPENAI_API_BASE:-https://openrouter.ai/api/v1}
+      - MATH_HTTP_PORT=8000
+      - SEARCH_HTTP_PORT=8001
+      - GETPRICE_HTTP_PORT=8003
+      - CRYPTO_HTTP_PORT=8005
+      - INDICATORS_HTTP_PORT=8006
+      - PORTFOLIO_HTTP_PORT=8007
+    volumes:
+      - ./data:/app/data
+      - ./configs:/app/configs
+    depends_on:
+      - mcp-math
+      - mcp-search
+      - mcp-price
+      - mcp-trade
+      - mcp-indicators
+      - mcp-portfolio
+
+  # Dashboard
+  dashboard:
+    build: { context: ., dockerfile: docker/Dockerfile.dashboard }
+    environment:
+      - ARENA_DATA_PATH=/app/data/arena_data
+    volumes:
+      - ./data:/app/data
+    ports: ["8080:8080"]
