@@ -142,7 +142,7 @@ def get_price_local_daily(symbol: str, date: str) -> Dict[str, Any]:
                     "symbol": symbol,
                     "date": date,
                     "ohlcv": {
-                        "open": day.get("1. buy price"),
+                        "open": day.get("1. open") or day.get("1. buy price"),
                         "high": "You can not get the current high price",
                         "low": "You can not get the current low price", 
                         "close": "You can not get the next close price",
@@ -154,10 +154,10 @@ def get_price_local_daily(symbol: str, date: str) -> Dict[str, Any]:
                     "symbol": symbol,
                     "date": date,
                     "ohlcv": {
-                        "open": day.get("1. buy price"),
+                        "open": day.get("1. open") or day.get("1. buy price"),
                         "high": day.get("2. high"),
                         "low": day.get("3. low"), 
-                        "close": day.get("4. sell price"),
+                        "close": day.get("4. close") or day.get("4. sell price"),
                         "volume": day.get("5. volume"),
                     },
                 }
@@ -208,7 +208,7 @@ def get_price_local_hourly(symbol: str, date: str) -> Dict[str, Any]:
                     "symbol": symbol,
                     "date": date,
                     "ohlcv": {
-                        "open": day.get("1. buy price"),
+                        "open": day.get("1. open") or day.get("1. buy price"),
                         "high": "You can not get the current high price",
                         "low": "You can not get the current low price", 
                         "close": "You can not get the next close price",
@@ -220,10 +220,10 @@ def get_price_local_hourly(symbol: str, date: str) -> Dict[str, Any]:
                     "symbol": symbol,
                     "date": date,
                     "ohlcv": {
-                        "open": day.get("1. buy price"),
+                        "open": day.get("1. open") or day.get("1. buy price"),
                         "high": day.get("2. high"),
                         "low": day.get("3. low"), 
-                        "close": day.get("4. sell price"),
+                        "close": day.get("4. close") or day.get("4. sell price"),
                         "volume": day.get("5. volume"),
                     },
                 }
@@ -272,10 +272,10 @@ def get_price_local_function(symbol: str, date: str, filename: str = "merged.jso
                 "symbol": symbol,
                 "date": date,
                 "ohlcv": {
-                    "buy price": day.get("1. buy price"),
+                    "buy price": day.get("1. open") or day.get("1. buy price"),
                     "high": day.get("2. high"),
                     "low": day.get("3. low"),
-                    "sell price": day.get("4. sell price"),
+                    "sell price": day.get("4. close") or day.get("4. sell price"),
                     "volume": day.get("5. volume"),
                 },
             }

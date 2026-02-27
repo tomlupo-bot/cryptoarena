@@ -129,6 +129,11 @@ def buy_crypto(symbol: str, amount: float) -> Dict[str, Any]:
             cash_left = current_position["CASH"] - this_symbol_price * amount
         except Exception as e:
             print(current_position, "CASH", this_symbol_price, amount)
+            return {
+                "error": f"Failed to calculate cash: {e}",
+                "symbol": symbol,
+                "date": today_date,
+            }
 
         # Check if cash balance is sufficient for purchase
         if cash_left < 0:

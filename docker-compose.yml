@@ -53,6 +53,15 @@ services:
       - ./data:/app/data
     ports: ["8007:8007"]
 
+  mcp-backtest:
+    build: { context: ., dockerfile: docker/Dockerfile }
+    command: python agent_tools/tool_backtest.py
+    environment:
+      - BACKTEST_HTTP_PORT=8008
+    volumes:
+      - ./data:/app/data
+    ports: ["8008:8008"]
+
   # Arena runner
   arena:
     build: { context: ., dockerfile: docker/Dockerfile }
@@ -66,6 +75,7 @@ services:
       - CRYPTO_HTTP_PORT=8005
       - INDICATORS_HTTP_PORT=8006
       - PORTFOLIO_HTTP_PORT=8007
+      - BACKTEST_HTTP_PORT=8008
     volumes:
       - ./data:/app/data
       - ./configs:/app/configs
@@ -76,6 +86,7 @@ services:
       - mcp-trade
       - mcp-indicators
       - mcp-portfolio
+      - mcp-backtest
 
   # Dashboard
   dashboard:

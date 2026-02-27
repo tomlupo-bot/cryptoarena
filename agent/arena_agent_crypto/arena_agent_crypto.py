@@ -30,6 +30,11 @@ from langchain_core.messages import AIMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_openai import ChatOpenAI
 
+try:
+    from langchain_anthropic import ChatAnthropic
+except ImportError:
+    ChatAnthropic = None
+
 from economic.tracker import EconomicTracker
 from economic.risk_manager import RiskManager
 from economic.arena_logger import ArenaLogger
@@ -151,10 +156,10 @@ class ArenaAgentCrypto:
                 "transport": "streamable_http",
                 "url": f"http://localhost:{os.getenv('MATH_HTTP_PORT', '8000')}/mcp",
             },
-            "search": {
-                "transport": "streamable_http",
-                "url": f"http://localhost:{os.getenv('SEARCH_HTTP_PORT', '8001')}/mcp",
-            },
+            # "search": {
+            #     "transport": "streamable_http",
+            #     "url": f"http://localhost:{os.getenv('SEARCH_HTTP_PORT', '8001')}/mcp",
+            # },
             "price": {
                 "transport": "streamable_http",
                 "url": f"http://localhost:{os.getenv('GETPRICE_HTTP_PORT', '8003')}/mcp",
@@ -170,6 +175,10 @@ class ArenaAgentCrypto:
             "portfolio": {
                 "transport": "streamable_http",
                 "url": f"http://localhost:{os.getenv('PORTFOLIO_HTTP_PORT', '8007')}/mcp",
+            },
+            "backtest": {
+                "transport": "streamable_http",
+                "url": f"http://localhost:{os.getenv('BACKTEST_HTTP_PORT', '8008')}/mcp",
             },
         }
 
@@ -188,13 +197,27 @@ class ArenaAgentCrypto:
         print(f"✅ Loaded {len(self.tools) if self.tools else 0} MCP tools")
 
         # LLM with token tracking wrapper
-        raw_model = ChatOpenAI(
-            model=self.basemodel,
-            base_url=self.openai_base_url,
-            api_key=self.openai_api_key,
-            max_retries=3,
-            timeout=30,
+        use_anthropic_direct = (
+            self.basemodel.startswith("claude")
+            and ChatAnthropic
+            and not (self.openai_base_url and "openrouter" in (self.openai_base_url or ""))
         )
+        if use_anthropic_direct:
+            raw_model = ChatAnthropic(
+                model=self.basemodel,
+                api_key=self.openai_api_key or os.getenv("ANTHROPIC_API_KEY"),
+                max_retries=3,
+                timeout=30,
+                max_tokens=4096,
+            )
+        else:
+            raw_model = ChatOpenAI(
+                model=self.basemodel,
+                base_url=self.openai_base_url,
+                api_key=self.openai_api_key,
+                max_retries=3,
+                timeout=30,
+            )
         self.model = TrackedLLMProvider(raw_model, self.economic_tracker)
 
         print(f"✅ Arena agent {self.signature} ready (token costs → capital)")

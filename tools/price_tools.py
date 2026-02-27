@@ -575,7 +575,7 @@ def get_open_prices(
             bar = series.get(today_date)
             
             if isinstance(bar, dict):
-                open_val = bar.get("1. buy price")
+                open_val = bar.get("1. open") or bar.get("1. buy price")
                 
                 try:
                     results[f"{sym}_price"] = float(open_val) if open_val is not None else None
@@ -634,8 +634,8 @@ def get_yesterday_open_and_close_price(
             # 尝试获取昨日买入价和卖出价
             bar = series.get(yesterday_date)
             if isinstance(bar, dict):
-                buy_val = bar.get("1. buy price")  # 买入价字段
-                sell_val = bar.get("4. sell price")  # 卖出价字段
+                buy_val = bar.get("1. open") or bar.get("1. buy price")  # 买入价字段
+                sell_val = bar.get("4. close") or bar.get("4. sell price")  # 卖出价字段
 
                 try:
                     buy_price = float(buy_val) if buy_val is not None else None

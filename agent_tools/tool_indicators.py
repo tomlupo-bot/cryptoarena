@@ -35,10 +35,10 @@ def _load_price_series(symbol: str, end_date: str, lookback: int = 100) -> List[
             for date_str, vals in ts.items():
                 if date_str <= end_date:
                     series[date_str] = {
-                        "open": float(vals.get("1. buy price", 0)),
+                        "open": float(vals.get("1. open") or vals.get("1. buy price") or 0),
                         "high": float(vals.get("2. high", 0)),
                         "low": float(vals.get("3. low", 0)),
-                        "close": float(vals.get("4. sell price", 0)),
+                        "close": float(vals.get("4. close") or vals.get("4. sell price") or 0),
                         "volume": float(vals.get("5. volume", 0)),
                     }
             break

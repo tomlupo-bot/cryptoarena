@@ -1,0 +1,8 @@
+{
+    "SIGNATURE": "team-deepseek",
+    "IF_TRADE": false,
+    "MARKET": "crypto",
+    "LOG_PATH": "./data/arena_data",
+    "TODAY_DATE": "2025-10-03",
+    "LOG_FILE": "./data/arena_data/team-deepseek/log/2025-10-03/log.jsonl"
+}
