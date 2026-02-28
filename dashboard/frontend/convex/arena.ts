@@ -194,3 +194,72 @@ export const bulkAddTrades = mutation({
     }
   },
 });
+
+// ── Control mutations (called from web UI) ─────────────
+
+export const requestStart = mutation({
+  args: {
+    name: v.string(),
+    dateRange: v.object({ initDate: v.string(), endDate: v.string() }),
+    teams: v.array(v.object({
+      name: v.string(),
+      model: v.string(),
+      signature: v.string(),
+      tokenPricing: v.object({ inputPer1m: v.number(), outputPer1m: v.number() }),
+    })),
+    initialCash: v.number(),
+    tradingIntervalMinutes: v.number(),
+    maxDrawdownPct: v.number(),
+  },
+  handler: async (ctx, args) => {
+    // Check no other experiment is running
+    const running = await ctx.db
+      .query("arena_experiments")
+      .withIndex("by_status", (q) => q.eq("status", "running"))
+      .first();
+    if (running) throw new Error("An experiment is already running");
+
+    const pending = await ctx.db
+      .query("arena_experiments")
+      .withIndex("by_status", (q) => q.eq("status", "pending"))
+      .first();
+    if (pending) throw new Error("An experiment is already pending");
+
+    return await ctx.db.insert("arena_experiments", {
+      name: args.name,
+      status: "pending",
+      config: {
+        teams: args.teams,
+        initialCash: args.initialCash,
+        tradingIntervalMinutes: args.tradingIntervalMinutes,
+        maxDrawdownPct: args.maxDrawdownPct,
+      },
+      dateRange: args.dateRange,
+      teams: args.teams.map(t => t.signature),
+    });
+  },
+});
+
+export const requestStop = mutation({
+  args: { id: v.id("arena_experiments") },
+  handler: async (ctx, { id }) => {
+    const exp = await ctx.db.get(id);
+    if (!exp) throw new Error("Experiment not found");
+    if (exp.status !== "running" && exp.status !== "pending") {
+      throw new Error("Experiment is not running or pending");
+    }
+    await ctx.db.patch(id, { status: "stopped" });
+  },
+});
+
+// ── Poller query (VPS checks this) ─────────────────────
+
+export const getPendingExperiment = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("arena_experiments")
+      .withIndex("by_status", (q) => q.eq("status", "pending"))
+      .first();
+  },
+});

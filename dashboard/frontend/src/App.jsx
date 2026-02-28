@@ -5,8 +5,10 @@ import Leaderboard from './pages/Leaderboard'
 import EquityCurves from './pages/EquityCurves'
 import TokenEconomics from './pages/TokenEconomics'
 import Experiments from './pages/Experiments'
+import ControlPanel from './pages/ControlPanel'
 
 const TABS = [
+  { id: 'control', label: '🎮 Control', component: ControlPanel },
   { id: 'experiments', label: '🧪 Experiments', component: Experiments },
   { id: 'leaderboard', label: '🏆 Leaderboard', component: Leaderboard },
   { id: 'equity', label: '📈 Equity Curves', component: EquityCurves },
@@ -14,7 +16,7 @@ const TABS = [
 ]
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('experiments')
+  const [activeTab, setActiveTab] = useState('control')
   const activeExperiment = useQuery(api.arena.getActiveExperiment)
   const ActiveComponent = TABS.find(t => t.id === activeTab)?.component || Experiments
 
