@@ -1,30 +1,23 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { useApi } from '../hooks/useApi'
+import { useEquityCurves } from '../hooks/useArenaData'
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
 
 export default function EquityCurves() {
-  const { data: teamsData } = useApi('/teams')
-  const [curves, setCurves] = useState({})
-  const [visibleTeams, setVisibleTeams] = useState(new Set())
+  const { data: curves, loading, error } = useEquityCurves()
+  const [visibleTeams, setVisibleTeams] = useState(null)
 
-  const teams = teamsData?.teams || []
+  if (loading) return <div className="text-gray-400">Loading equity curves...</div>
+  if (error) return <div className="text-red-400">Error: {error}</div>
+  if (!curves) return <div className="text-gray-400">No data yet</div>
 
-  useEffect(() => {
-    if (!teams.length) return
-    setVisibleTeams(new Set(teams))
-
-    teams.forEach(async (team) => {
-      try {
-        const res = await fetch(`/api/equity/${team}`)
-        if (res.ok) {
-          const json = await res.json()
-          setCurves(prev => ({ ...prev, [team]: json.equity_curve }))
-        }
-      } catch {}
-    })
-  }, [teams.join(',')])
+  const teams = Object.keys(curves)
+  if (visibleTeams === null && teams.length) {
+    // Initialize on first render
+    setTimeout(() => setVisibleTeams(new Set(teams)), 0)
+    return <div className="text-gray-400">Loading...</div>
+  }
 
   // Merge all curves into unified data points
   const allTimestamps = new Set()
@@ -34,7 +27,7 @@ export default function EquityCurves() {
   const sortedTimestamps = [...allTimestamps].sort()
 
   const chartData = sortedTimestamps.map(ts => {
-    const point = { timestamp: ts }
+    const point = { timestamp: ts.split('T')[0] }
     teams.forEach(team => {
       const curve = curves[team] || []
       const match = curve.find(p => p.timestamp === ts)
@@ -53,16 +46,14 @@ export default function EquityCurves() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Equity Curves</h2>
-
-      {/* Team toggles */}
+      <h2 className="text-xl font-semibold mb-4 text-white">Equity Curves</h2>
       <div className="flex gap-3 mb-4">
         {teams.map((team, i) => (
           <button
             key={team}
             onClick={() => toggleTeam(team)}
             className={`px-3 py-1 rounded text-sm font-medium transition-opacity ${
-              visibleTeams.has(team) ? 'opacity-100' : 'opacity-30'
+              visibleTeams?.has(team) ? 'opacity-100' : 'opacity-30'
             }`}
             style={{ color: COLORS[i % COLORS.length], borderColor: COLORS[i % COLORS.length], borderWidth: 1 }}
           >
@@ -70,7 +61,6 @@ export default function EquityCurves() {
           </button>
         ))}
       </div>
-
       <div className="bg-gray-900 rounded-lg p-4" style={{ height: 500 }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
@@ -82,16 +72,8 @@ export default function EquityCurves() {
               labelStyle={{ color: '#d1d5db' }}
             />
             <Legend />
-            {teams.filter(t => visibleTeams.has(t)).map((team, i) => (
-              <Line
-                key={team}
-                type="monotone"
-                dataKey={team}
-                stroke={COLORS[i % COLORS.length]}
-                strokeWidth={2}
-                dot={false}
-                connectNulls
-              />
+            {teams.filter(t => visibleTeams?.has(t)).map((team, i) => (
+              <Line key={team} type="monotone" dataKey={team} stroke={COLORS[i % COLORS.length]} strokeWidth={2} dot={false} connectNulls />
             ))}
           </LineChart>
         </ResponsiveContainer>

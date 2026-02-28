@@ -176,10 +176,6 @@ class ArenaAgentCrypto:
                 "transport": "streamable_http",
                 "url": f"http://localhost:{os.getenv('PORTFOLIO_HTTP_PORT', '8007')}/mcp",
             },
-            "backtest": {
-                "transport": "streamable_http",
-                "url": f"http://localhost:{os.getenv('BACKTEST_HTTP_PORT', '8008')}/mcp",
-            },
         }
 
     # ── initialization ──────────────────────────────────────────────

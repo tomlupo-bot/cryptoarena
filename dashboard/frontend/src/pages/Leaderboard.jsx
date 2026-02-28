@@ -1,5 +1,5 @@
 import React from 'react'
-import { useApi } from '../hooks/useApi'
+import { useLeaderboard } from '../hooks/useArenaData'
 
 const tierColors = {
   thriving: 'text-green-400',
@@ -10,7 +10,7 @@ const tierColors = {
 }
 
 export default function Leaderboard() {
-  const { data, loading, error } = useApi('/leaderboard')
+  const { data, loading, error } = useLeaderboard()
 
   if (loading) return <div className="text-gray-400">Loading leaderboard...</div>
   if (error) return <div className="text-red-400">Error: {error}</div>

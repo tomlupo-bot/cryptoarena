@@ -1,9 +1,9 @@
 import React from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { useApi } from '../hooks/useApi'
+import { useTokenEconomics } from '../hooks/useArenaData'
 
 export default function TokenEconomics() {
-  const { data, loading, error } = useApi('/economics')
+  const { data, loading, error } = useTokenEconomics()
 
   if (loading) return <div className="text-gray-400">Loading economics...</div>
   if (error) return <div className="text-red-400">Error: {error}</div>

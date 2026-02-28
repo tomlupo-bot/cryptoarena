@@ -2,60 +2,34 @@
   "agent_type": "ArenaAgentCrypto",
   "market": "crypto",
   "date_range": {
-    "init_date": "2025-09-28",
-    "end_date": "2025-10-07"
+    "init_date": "2025-09-30",
+    "end_date": "2025-10-02"
   },
   "arena": {
-    "name": "7-Day Showdown",
-    "trading_interval_minutes": 1440,
+    "name": "Test Run",
+    "trading_interval_minutes": 60,
     "token_budget_mode": "deduct_from_capital",
     "max_drawdown_pct": 50.0,
     "kill_on_bankruptcy": true
   },
   "models": [
     {
-      "name": "claude-sonnet-4",
-      "basemodel": "anthropic/claude-sonnet-4",
-      "signature": "team-claude",
-      "enabled": true,
-      "openai_api_key": "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",
-      "openai_base_url": "https://openrouter.ai/api/v1",
-      "token_pricing": {
-        "input_per_1m": 3.0,
-        "output_per_1m": 15.0,
-        "source": "openrouter"
-      }
-    },
-    {
       "name": "deepseek-v3.2",
       "basemodel": "deepseek/deepseek-v3.2",
       "signature": "team-deepseek",
       "enabled": true,
-      "openai_api_key": "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",
       "openai_base_url": "https://openrouter.ai/api/v1",
+      "openai_api_key": "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",
       "token_pricing": {
         "input_per_1m": 0.25,
-        "output_per_1m": 0.40,
-        "source": "openrouter"
-      }
-    },
-    {
-      "name": "qwen3.5-plus",
-      "basemodel": "qwen/qwen3.5-plus-02-15",
-      "signature": "team-qwen",
-      "enabled": true,
-      "openai_api_key": "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",
-      "openai_base_url": "https://openrouter.ai/api/v1",
-      "token_pricing": {
-        "input_per_1m": 0.40,
-        "output_per_1m": 2.40,
+        "output_per_1m": 0.4,
         "source": "openrouter"
       }
     }
   ],
   "agent_config": {
-    "max_steps": 15,
-    "max_retries": 3,
+    "max_steps": 10,
+    "max_retries": 2,
     "base_delay": 0.5,
     "initial_cash": 10000.0,
     "verbose": true
@@ -67,6 +41,6 @@
     "stop_loss_pct": 10.0
   },
   "log_config": {
-    "log_path": "./data/arena_data"
+    "log_path": "./data/test_data"
   }
 }

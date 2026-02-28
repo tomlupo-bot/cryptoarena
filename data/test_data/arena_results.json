@@ -1,0 +1,19 @@
+[
+  {
+    "team": "team-deepseek",
+    "model": "deepseek/deepseek-v3.2",
+    "status": "alive",
+    "death_reason": null,
+    "initial_balance": 10000.0,
+    "current_equity": 9999.9855,
+    "total_return_pct": -0.0001,
+    "cumulative_token_cost": 0.01447387,
+    "token_cost_as_pct_of_initial": 0.000145,
+    "realized_pnl": 0.0,
+    "peak_equity": 10000.0,
+    "max_drawdown_pct": 0.0001,
+    "survival_tier": "thriving",
+    "total_llm_calls": 24,
+    "avg_cost_per_call": 0.00060308
+  }
+]

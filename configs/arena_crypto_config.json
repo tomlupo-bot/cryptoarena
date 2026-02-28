@@ -2,11 +2,11 @@
   "agent_type": "ArenaAgentCrypto",
   "market": "crypto",
   "date_range": {
-    "init_date": "2025-10-01",
-    "end_date": "2025-10-31"
+    "init_date": "2025-09-30",
+    "end_date": "2025-10-14"
   },
   "arena": {
-    "name": "Q4 Crypto Showdown",
+    "name": "House of Quants \u2014 Feb 2026",
     "trading_interval_minutes": 60,
     "token_budget_mode": "deduct_from_capital",
     "max_drawdown_pct": 50.0,
@@ -14,36 +14,63 @@
   },
   "models": [
     {
-      "name": "claude-sonnet-4-5",
-      "basemodel": "anthropic/claude-sonnet-4-5-20250929",
+      "name": "claude-sonnet-4.5",
+      "basemodel": "anthropic/claude-sonnet-4.5",
       "signature": "team-claude",
       "enabled": true,
+      "openai_base_url": "https://openrouter.ai/api/v1",
       "token_pricing": {
         "input_per_1m": 3.0,
         "output_per_1m": 15.0,
-        "source": "manual"
+        "source": "openrouter"
       }
     },
     {
-      "name": "gpt-5",
-      "basemodel": "openai/gpt-5",
-      "signature": "team-gpt5",
+      "name": "gemini-3.1-pro",
+      "basemodel": "google/gemini-3.1-pro-preview",
+      "signature": "team-gemini",
       "enabled": true,
+      "openai_base_url": "https://openrouter.ai/api/v1",
       "token_pricing": {
-        "input_per_1m": 2.5,
-        "output_per_1m": 10.0,
-        "source": "manual"
+        "input_per_1m": 2.0,
+        "output_per_1m": 12.0,
+        "source": "openrouter"
       }
     },
     {
-      "name": "qwen-3.5-plus",
-      "basemodel": "qwen/qwen-3.5-plus",
+      "name": "deepseek-v3.2",
+      "basemodel": "deepseek/deepseek-v3.2",
+      "signature": "team-deepseek",
+      "enabled": true,
+      "openai_base_url": "https://openrouter.ai/api/v1",
+      "token_pricing": {
+        "input_per_1m": 0.25,
+        "output_per_1m": 0.4,
+        "source": "openrouter"
+      }
+    },
+    {
+      "name": "gemini-3-flash",
+      "basemodel": "google/gemini-3-flash-preview",
+      "signature": "team-flash",
+      "enabled": true,
+      "openai_base_url": "https://openrouter.ai/api/v1",
+      "token_pricing": {
+        "input_per_1m": 0.5,
+        "output_per_1m": 3.0,
+        "source": "openrouter"
+      }
+    },
+    {
+      "name": "qwen3.5-397b",
+      "basemodel": "qwen/qwen3.5-397b-a17b",
       "signature": "team-qwen",
       "enabled": true,
+      "openai_base_url": "https://openrouter.ai/api/v1",
       "token_pricing": {
-        "input_per_1m": 1.5,
-        "output_per_1m": 6.0,
-        "source": "manual"
+        "input_per_1m": 0.55,
+        "output_per_1m": 3.5,
+        "source": "openrouter"
       }
     }
   ],
