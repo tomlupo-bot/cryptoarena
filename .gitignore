@@ -9,3 +9,4 @@ dashboard/frontend/dist/
 data/arena_data/
 data/crypto/*.jsonl
 .venv/
+.vercel

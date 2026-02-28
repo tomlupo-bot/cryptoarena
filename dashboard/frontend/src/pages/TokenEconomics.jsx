@@ -1,71 +1,53 @@
 import React from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { useTokenEconomics } from '../hooks/useArenaData'
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
-export default function TokenEconomics() {
-  const { data, loading, error } = useTokenEconomics()
+export default function TokenEconomics({ experimentId }) {
+  const teams = useQuery(
+    api.arena.getLeaderboard,
+    experimentId ? { experimentId } : "skip"
+  )
 
-  if (loading) return <div className="text-gray-400">Loading economics...</div>
-  if (error) return <div className="text-red-400">Error: {error}</div>
+  if (!experimentId) return <div className="text-gray-400">Select an experiment to view economics</div>
+  if (!teams) return <div className="text-gray-400">Loading...</div>
+  if (teams.length === 0) return <div className="text-gray-400">No data yet</div>
 
-  const economics = data?.economics || []
-
-  const chartData = economics.map(e => ({
-    team: e.team,
-    'Trading PnL': e.trading_pnl,
-    'Token Cost': -e.token_cost,
-    'Net Return': e.net_return,
+  const chartData = teams.map(t => ({
+    name: t.team,
+    tokenCost: t.tokenCost,
+    llmCalls: t.llmCalls,
+    costPerCall: t.llmCalls > 0 ? t.tokenCost / t.llmCalls : 0,
+    returnPct: t.returnPct,
+    netReturn: t.returnPct - (t.tokenCost / 100), // token cost as % of initial $10K
   }))
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Token Economics</h2>
+      <h2 className="text-xl font-semibold mb-4 text-white">Token Economics</h2>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {economics.map(e => (
-          <div key={e.team} className="bg-gray-900 rounded-lg p-4">
-            <h3 className="text-lg font-medium text-white mb-2">{e.team}</h3>
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Trading PnL</span>
-                <span className={e.trading_pnl >= 0 ? 'text-green-400' : 'text-red-400'}>
-                  {e.trading_pnl >= 0 ? '+' : ''}{e.trading_pnl?.toFixed(2)} USDT
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Token Cost</span>
-                <span className="text-yellow-400">-${e.token_cost?.toFixed(4)}</span>
-              </div>
-              <div className="flex justify-between border-t border-gray-700 pt-1 mt-1">
-                <span className="text-gray-300 font-medium">Net Return</span>
-                <span className={`font-medium ${e.net_return >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {e.net_return >= 0 ? '+' : ''}{e.net_return?.toFixed(2)} USDT
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Token % of Capital</span>
-                <span className="text-gray-300">{e.token_cost_pct?.toFixed(4)}%</span>
-              </div>
-            </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {teams.map(t => (
+          <div key={t.team} className="bg-gray-900 rounded-lg p-4">
+            <p className="text-sm text-gray-400">{t.team}</p>
+            <p className="text-lg font-mono text-yellow-400">${t.tokenCost.toFixed(4)}</p>
+            <p className="text-xs text-gray-500">{t.llmCalls} calls</p>
           </div>
         ))}
       </div>
 
-      {/* Stacked bar chart */}
+      {/* Bar chart */}
       <div className="bg-gray-900 rounded-lg p-4" style={{ height: 400 }}>
-        <h3 className="text-sm font-medium text-gray-400 mb-3">Trading PnL vs Token Costs</h3>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="team" stroke="#9ca3af" />
-            <YAxis stroke="#9ca3af" />
-            <Tooltip
-              contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: 8 }}
-            />
+            <XAxis dataKey="name" stroke="#9ca3af" tick={{ fontSize: 11 }} />
+            <YAxis stroke="#9ca3af" tick={{ fontSize: 11 }} />
+            <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: 8 }} />
             <Legend />
-            <Bar dataKey="Trading PnL" fill="#10b981" stackId="a" />
-            <Bar dataKey="Token Cost" fill="#ef4444" stackId="a" />
+            <Bar dataKey="tokenCost" name="Token Cost ($)" fill="#f59e0b" />
+            <Bar dataKey="llmCalls" name="LLM Calls" fill="#3b82f6" />
           </BarChart>
         </ResponsiveContainer>
       </div>
